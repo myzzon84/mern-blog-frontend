@@ -6,6 +6,10 @@ export const appStore = create((set) => ({
         setPosts: (posts) => set({ posts }),
         tags: null,
         setTags: (tags) => set({ tags }),
+        onePost: null,
+        setOnePost: (post) => set({onePost: post}),
+        user: null,
+        setUser: (user) => set({user}),
     })
 );
 

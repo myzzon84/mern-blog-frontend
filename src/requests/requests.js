@@ -9,3 +9,8 @@ export const getLastTags = async () => {
     let lastTags = await axios.get('/posts/tags');
     return lastTags.data;
 }
+
+export const getPostById = async (id) => {
+    let post = await axios.get(`/posts/one/${id}`);
+    return post;
+}
