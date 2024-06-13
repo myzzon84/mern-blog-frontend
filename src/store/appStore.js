@@ -10,6 +10,8 @@ export const appStore = create((set) => ({
         setOnePost: (post) => set({onePost: post}),
         user: null,
         setUser: (user) => set({user}),
+        isAuth: false,
+        setIsAuth: (bool) => set({isAuth: bool}),
     })
 );
 

@@ -5,7 +5,16 @@ import { Home, FullPost, Registration, AddPost, Login } from './pages';
 
 import { Routes, Route } from 'react-router-dom';
 
+import { appStore } from './store/appStore.js';
+import { useEffect } from 'react';
+
 function App() {
+    const setIsAuth = appStore(state => state.setIsAuth);
+    useEffect(() => {
+        if(localStorage.getItem('token')){
+            setIsAuth(true);
+        }
+    },[]);
     return (
         <>
             <Header />

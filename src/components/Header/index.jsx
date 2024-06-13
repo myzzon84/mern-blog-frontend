@@ -6,10 +6,18 @@ import Container from '@mui/material/Container';
 
 import { Link } from 'react-router-dom';
 
-export const Header = () => {
-  const isAuth = false;
+import { appStore } from '../../store/appStore.js';
 
-  const onClickLogout = () => {};
+export const Header = () => {
+  const isAuth = appStore(state => state.isAuth);
+  const setIsAuth = appStore(state => state.setIsAuth);
+  const setUser = appStore(state => state.setUser);
+
+  const onClickLogout = () => {
+    setUser(null);
+    localStorage.removeItem('token');
+    setIsAuth(false);
+  };
 
   return (
     <div className={styles.root}>

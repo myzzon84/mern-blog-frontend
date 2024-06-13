@@ -6,7 +6,7 @@ import { Index } from '../components/AddComment';
 import { CommentsBlock } from '../components/CommentsBlock';
 
 import { appStore } from '../store/appStore.js';
-import { getPostById } from '../requests/requests.js';
+import { getPostById, getUserById } from '../requests/requests.js';
 
 export const FullPost = () => {
     const { id } = useParams();
@@ -16,6 +16,7 @@ export const FullPost = () => {
     const posts = appStore((state) => state.posts);
 
     const [postLoading, setPostLoading] = useState(true);
+    const [userLoading, setUserLoading] = useState(true);
     const [user, setUser] = useState(null);
 
     useEffect(() => {
@@ -29,12 +30,11 @@ export const FullPost = () => {
                 return data;
             })
             .then((data) => {
-                let user = posts.filter((element) => {
-                    return data.user === element.user._id;
-                });
-                if (user.length > 0) {
-                    setUser(user[0].user);
-                }
+                getUserById(data.user)
+                .then((user) => {
+                    setUser(user);
+                    setUserLoading(false);
+                })
             })
             .catch((err) => {
                 setPostLoading(false);
@@ -42,7 +42,7 @@ export const FullPost = () => {
             });
     }, []);
 
-    if (postLoading) {
+    if (postLoading || userLoading) {
         return <Post isLoading={postLoading} />;
     }
 
@@ -51,14 +51,14 @@ export const FullPost = () => {
             <Post
                 id={onePost._id}
                 title={onePost.title}
-                imageUrl='https://res.cloudinary.com/practicaldev/image/fetch/s--UnAfrEG8--/c_imagga_scale,f_auto,fl_progressive,h_420,q_auto,w_1000/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/icohm5g0axh9wjmu4oc3.png'
+                imageUrl={onePost.imageUrl}
                 user={{
                     avatarUrl:
                         'https://res.cloudinary.com/practicaldev/image/fetch/s--uigxYVRB--/c_fill,f_auto,fl_progressive,h_50,q_auto,w_50/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/187971/a5359a24-b652-46be-8898-2c5df32aa6e0.png',
                     fullName: user.fullName,
                 }}
                 createdAt={new Date(
-                    user.createdAt.split('T')[0]
+                    onePost.createdAt.split('T')[0]
                 ).toLocaleString('ru', {
                     day: 'numeric',
                     month: 'long',
