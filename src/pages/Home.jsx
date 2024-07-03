@@ -15,6 +15,7 @@ export const Home = () => {
     const setPosts = appStore((state) => state.setPosts);
     const tags = appStore((state) => state.tags);
     const setTags = appStore((state) => state.setTags);
+    const user = appStore((state) => state.user);
 
     const [loadingPosts, setLoadingPosts] = useState(false);
     const [loadingTags, setLoadingTags] = useState(false);
@@ -41,6 +42,8 @@ export const Home = () => {
             });
     }, []);
 
+
+
     return (
         <>
             <Tabs
@@ -60,6 +63,7 @@ export const Home = () => {
                     item
                 >
                     {posts?.map((item, i) => (
+                        
                         <Post
                             id={item._id}
                             title={item.title}
@@ -79,7 +83,7 @@ export const Home = () => {
                             viewsCount={item.viewsCount}
                             commentsCount={3}
                             tags={item.tags.length ? item.tags : null}
-                            isEditable
+                            isEditable={item.user._id === user?._id}
                             key={i}
                             isLoading={loadingPosts}
                         />

@@ -11,8 +11,10 @@ import { login } from '../../requests/requests.js';
 import { appStore } from '../../store/appStore.js';
 import { useNavigate } from 'react-router-dom';
 
-export const Login = () => {
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
+export const Login = () => {
     const navigate = useNavigate();
     const setIsAuth = appStore((state) => state.setIsAuth);
     const setUser = appStore((state) => state.setUser);
@@ -25,19 +27,24 @@ export const Login = () => {
     } = useForm({
         defaultValues: {
             email: '',
-            password: '',
+            passwordHash: '',
         },
         mode: 'onChange',
     });
 
     const onSubmit = async (values) => {
-        let user = await login(values);
-        if (user) {
-            setUser(user.data);
-            setIsAuth(true);
-            localStorage.setItem('token', user.data.token);
-            navigate('/');
-        }
+        await login(values)
+            .then((data) => {
+                setUser(data.data);
+                return data;
+            })
+            .then((data) => {
+                sessionStorage.setItem('token', data.data.token);
+            })
+            .then(() => setIsAuth(true))
+            .then(() => navigate('/'))
+            .catch((err) => toast.error(err.response.data.message)
+        );
     };
 
     return (

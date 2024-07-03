@@ -12,10 +12,11 @@ export const Header = () => {
   const isAuth = appStore(state => state.isAuth);
   const setIsAuth = appStore(state => state.setIsAuth);
   const setUser = appStore(state => state.setUser);
+  const user = appStore(state => state.user);
 
   const onClickLogout = () => {
     setUser(null);
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     setIsAuth(false);
   };
 
@@ -24,7 +25,7 @@ export const Header = () => {
       <Container maxWidth="lg">
         <div className={styles.inner}>
           <Link className={styles.logo} to="/">
-            <div>ARCHAKOV BLOG</div>
+            <div>{user ? user.fullName : 'ARCHAKOV BLOG'}</div>
           </Link>
           <div className={styles.buttons}>
             {isAuth ? (
