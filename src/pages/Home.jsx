@@ -17,11 +17,10 @@ export const Home = () => {
     const setTags = appStore((state) => state.setTags);
     const user = appStore((state) => state.user);
 
-    const [loadingPosts, setLoadingPosts] = useState(false);
-    const [loadingTags, setLoadingTags] = useState(false);
+    const [loadingPosts, setLoadingPosts] = useState(true);
+    const [loadingTags, setLoadingTags] = useState(true);
 
     useEffect(() => {
-        setLoadingPosts(true);
         getAllPosts()
             .then(data => setPosts(data.data))
             .then(() => setLoadingPosts(false))
@@ -32,7 +31,6 @@ export const Home = () => {
     }, []);
 
     useEffect(() => {
-        setLoadingTags(true);
         getLastTags()
             .then(data => setTags(data))
             .then(() => setLoadingTags(false))
@@ -65,6 +63,7 @@ export const Home = () => {
                     {posts?.map((item, i) => (
                         
                         <Post
+                            // id={undefined}
                             id={item._id}
                             title={item.title}
                             imageUrl={item.imageUrl}
@@ -86,6 +85,7 @@ export const Home = () => {
                             isEditable={item.user._id === user?._id}
                             key={i}
                             isLoading={loadingPosts}
+                            posts={posts}
                         />
                     ))}
                 </Grid>

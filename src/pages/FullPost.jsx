@@ -2,18 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { Post } from '../components/Post';
+import { PostSkeleton } from '../components/Post/Skeleton.jsx';
 import { Index } from '../components/AddComment';
 import { CommentsBlock } from '../components/CommentsBlock';
 
 import { appStore } from '../store/appStore.js';
 import { getPostById, getUserById } from '../requests/requests.js';
+import ReactMarkdown from 'react-markdown';
 
 export const FullPost = () => {
     const { id } = useParams();
 
     const onePost = appStore((state) => state.onePost);
     const setOnePost = appStore((state) => state.setOnePost);
-    const posts = appStore((state) => state.posts);
 
     const [postLoading, setPostLoading] = useState(true);
     const [userLoading, setUserLoading] = useState(true);
@@ -26,7 +27,7 @@ export const FullPost = () => {
                 return data.data;
             })
             .then((data) => {
-                setPostLoading(false);
+                
                 return data;
             })
             .then((data) => {
@@ -34,6 +35,7 @@ export const FullPost = () => {
                 .then((user) => {
                     setUser(user);
                     setUserLoading(false);
+                    setPostLoading(false);
                 })
             })
             .catch((err) => {
@@ -42,8 +44,9 @@ export const FullPost = () => {
             });
     }, []);
 
-    if (postLoading || userLoading) {
-        return <Post isLoading={postLoading} />;
+    if (postLoading && userLoading) {
+        return <PostSkeleton/>
+        // return <Post isLoading={postLoading} />;
     }
 
     return (
@@ -55,7 +58,7 @@ export const FullPost = () => {
                 user={{
                     avatarUrl:
                         'https://res.cloudinary.com/practicaldev/image/fetch/s--uigxYVRB--/c_fill,f_auto,fl_progressive,h_50,q_auto,w_50/https://dev-to-uploads.s3.amazonaws.com/uploads/user/profile_image/187971/a5359a24-b652-46be-8898-2c5df32aa6e0.png',
-                    fullName: user.fullName,
+                    fullName: onePost.user.fullName,
                 }}
                 createdAt={new Date(
                     onePost.createdAt.split('T')[0]
@@ -69,7 +72,8 @@ export const FullPost = () => {
                 tags={onePost.tags}
                 isFullPost
             >
-                <p>{onePost.text}</p>
+                {/* <p>{onePost.text}</p> */}
+                <ReactMarkdown children={onePost.text}/>
             </Post>
             <CommentsBlock
                 items={[

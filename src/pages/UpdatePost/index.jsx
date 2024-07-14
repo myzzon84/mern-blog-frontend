@@ -5,16 +5,15 @@ import Button from '@mui/material/Button';
 import SimpleMDE from 'react-simplemde-editor';
 
 import 'easymde/dist/easymde.min.css';
-import styles from './AddPost.module.scss';
+import styles from './UpdatePost.module.scss';
 
 import axios from '../../axios/axios.js';
-import { addPost, getPostById, updatePost } from '../../requests/requests.js';
+import { getPostById, updatePost } from '../../requests/requests.js';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { appStore } from '../../store/appStore.js';
-import { PostSkeleton } from '../../components/Post/Skeleton.jsx';
 
-export const AddPost = () => {
+export const UpdatePost = () => {
     const navigate = useNavigate();
     const edit = appStore((state) => state.edit);
     const [text, setText] = useState('');
@@ -22,7 +21,6 @@ export const AddPost = () => {
     const [tagsString, setTagsString] = useState('');
     const [imageUrl, setImageUrl] = useState('');
     const inputFileRef = useRef(null);
-    const { id } = useParams();
 
     const handleChangeFile = async (e) => {
         try {
@@ -98,7 +96,7 @@ export const AddPost = () => {
             imageUrl,
         };
 
-        addPost(fields)
+        updatePost(fields)
             .then((data) => {
                 console.log(data);
                 return data;

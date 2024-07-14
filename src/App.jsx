@@ -1,7 +1,7 @@
 import Container from '@mui/material/Container';
 
 import { Header } from './components';
-import { Home, FullPost, Registration, AddPost, Login } from './pages';
+import { Home, FullPost, Registration, AddPost, Login, UpdatePost } from './pages';
 import { getMe, checkToken, getAllPosts } from './requests/requests.js';
 
 import { Routes, Route } from 'react-router-dom';
@@ -9,11 +9,31 @@ import { Routes, Route } from 'react-router-dom';
 import { appStore } from './store/appStore.js';
 import { useEffect } from 'react';
 import { ToastContainer, Bounce } from 'react-toastify';
+import { useLocation } from 'react-router-dom';
 
 function App() {
     const setIsAuth = appStore((state) => state.setIsAuth);
     const setUser = appStore((state) => state.setUser);
     const setPosts = appStore((state) => state.setPosts);
+    const setEdit = appStore((state) => state.setEdit);
+    const location = useLocation();
+
+    console.log(location);
+
+    useEffect(() => {
+        if (!location.pathname.includes('/edit')) {
+            sessionStorage.removeItem('edit');
+            setEdit(false);
+        }
+    }, [location.pathname]);
+
+    useEffect(() => {
+        if (sessionStorage.getItem('edit')) {
+            setEdit(true);
+        } else {
+            setEdit(false);
+        }
+    }, []);
 
     useEffect(() => {
         getMe()
@@ -39,9 +59,8 @@ function App() {
             });
     }, []);
     useEffect(() => {
-        getAllPosts()
-            .then((posts) => setPosts(posts.data));
-    },[]);
+        getAllPosts().then((posts) => setPosts(posts.data));
+    }, []);
     return (
         <>
             <Header />
@@ -54,6 +73,10 @@ function App() {
                     <Route
                         path='/posts/:id'
                         element={<FullPost />}
+                    />
+                    <Route
+                        path='/posts/:id/edit'
+                        element={<UpdatePost />}
                     />
                     <Route
                         path='/posts/create'

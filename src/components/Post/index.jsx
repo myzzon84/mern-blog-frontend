@@ -1,4 +1,3 @@
-import React from 'react';
 import clsx from 'clsx';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Clear';
@@ -12,7 +11,7 @@ import { PostSkeleton } from './Skeleton';
 
 import { Link } from 'react-router-dom';
 
-import { removePost, getAllPosts } from '../../requests/requests.js';
+import { removePost } from '../../requests/requests.js';
 import { appStore } from '../../store/appStore.js';
 import { toast } from 'react-toastify';
 
@@ -30,14 +29,10 @@ export const Post = ({
     isLoading,
     isEditable,
 }) => {
-    
-
     const setPosts = appStore((state) => state.setPosts);
     const posts = appStore((state) => state.posts);
-
-    let post = posts?.filter((item) => {
-        return item._id === id
-    })
+    const setEdit = appStore((state) => state.setEdit);
+    const setOnePost = appStore((state) => state.setOnePost);
 
     const onClickRemove = () => {
         removePost(id)
@@ -54,25 +49,28 @@ export const Post = ({
                 newPosts.splice(index, 1);
                 setPosts(newPosts);
             })
-            .catch(err => {
+            .catch((err) => {
                 toast('Error remove post');
                 console.log(err);
-            })
+            });
     };
 
-    console.log(imageUrl);
-
-    if (isLoading) {
+    if (isLoading && posts?.length === 0 && !user.avatarUrl && !id) {
         return <PostSkeleton />;
     }
-
-    console.log(user);
 
     return (
         <div className={clsx(styles.root, { [styles.rootFull]: isFullPost })}>
             {isEditable && (
                 <div className={styles.editButtons}>
-                    <Link to={`/posts/${id}/edit`}>
+                    <Link to={`/posts/${id}/edit`} onClick={() => {
+                        sessionStorage.setItem('edit', 'true');
+                        setEdit(true);
+                        let post = posts.filter((post) => {
+                            return post._id === id
+                        })
+                        setOnePost(post);
+                    }}>
                         <IconButton color='primary'>
                             <EditIcon />
                         </IconButton>
@@ -95,6 +93,7 @@ export const Post = ({
                 />
             )}
             <div className={styles.wrapper}>
+                <div></div>
                 <UserInfo
                     {...user}
                     additionalText={createdAt}
@@ -113,8 +112,8 @@ export const Post = ({
                     </h2>
                     <ul className={styles.tags}>
                         {tags
-                            ? tags.map((name) => (
-                                  <li key={name}>
+                            ? tags.map((name, i) => (
+                                  <li key={i}>
                                       <Link to={`/tag/${name}`}>#{name}</Link>
                                   </li>
                               ))
