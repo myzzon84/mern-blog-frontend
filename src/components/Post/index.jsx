@@ -69,7 +69,7 @@ export const Post = ({
                         let post = posts.filter((post) => {
                             return post._id === id
                         })
-                        setOnePost(post);
+                        setOnePost(post[0]);
                     }}>
                         <IconButton color='primary'>
                             <EditIcon />

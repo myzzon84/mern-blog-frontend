@@ -51,7 +51,8 @@ export const addPost = async (fields) => {
 };
 
 export const updatePost = async (fields) => {
+    console.log(fields);
     const { id } = fields;
-    let response = await axios.patch(`/posts/one/${id}`);
+    let response = await axios.patch(`/posts/one/${id}`, fields);
     return response;
 };

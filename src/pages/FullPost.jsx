@@ -7,46 +7,27 @@ import { Index } from '../components/AddComment';
 import { CommentsBlock } from '../components/CommentsBlock';
 
 import { appStore } from '../store/appStore.js';
-import { getPostById, getUserById } from '../requests/requests.js';
 import ReactMarkdown from 'react-markdown';
+import { getPostById } from '../requests/requests.js';
 
 export const FullPost = () => {
     const { id } = useParams();
 
     const onePost = appStore((state) => state.onePost);
     const setOnePost = appStore((state) => state.setOnePost);
-
-    const [postLoading, setPostLoading] = useState(true);
-    const [userLoading, setUserLoading] = useState(true);
-    const [user, setUser] = useState(null);
+    const posts = appStore((state) => state.posts);
 
     useEffect(() => {
+        setOnePost(null);
         getPostById(id)
-            .then((data) => {
+            .then(data => {
                 setOnePost(data.data);
-                return data.data;
             })
-            .then((data) => {
-                
-                return data;
-            })
-            .then((data) => {
-                getUserById(data.user)
-                .then((user) => {
-                    setUser(user);
-                    setUserLoading(false);
-                    setPostLoading(false);
-                })
-            })
-            .catch((err) => {
-                setPostLoading(false);
-                console.log(err);
-            });
-    }, []);
+            .catch(err => console.log(err))
+    },[]);
 
-    if (postLoading && userLoading) {
+    if (!onePost) {
         return <PostSkeleton/>
-        // return <Post isLoading={postLoading} />;
     }
 
     return (
@@ -72,7 +53,6 @@ export const FullPost = () => {
                 tags={onePost.tags}
                 isFullPost
             >
-                {/* <p>{onePost.text}</p> */}
                 <ReactMarkdown children={onePost.text}/>
             </Post>
             <CommentsBlock

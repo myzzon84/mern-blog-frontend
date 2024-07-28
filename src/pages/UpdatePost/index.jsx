@@ -8,19 +8,22 @@ import 'easymde/dist/easymde.min.css';
 import styles from './UpdatePost.module.scss';
 
 import axios from '../../axios/axios.js';
-import { getPostById, updatePost } from '../../requests/requests.js';
+import { updatePost } from '../../requests/requests.js';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { appStore } from '../../store/appStore.js';
 
 export const UpdatePost = () => {
     const navigate = useNavigate();
-    const edit = appStore((state) => state.edit);
+    const posts = appStore((state) => state.posts);
+    const onePost = appStore((state) => state.onePost);
+    const setOnePost = appStore((state) => state.setOnePost);
     const [text, setText] = useState('');
     const [title, setTitle] = useState('');
     const [tagsString, setTagsString] = useState('');
     const [imageUrl, setImageUrl] = useState('');
     const inputFileRef = useRef(null);
+    const { id } = useParams();
 
     const handleChangeFile = async (e) => {
         try {
@@ -55,6 +58,24 @@ export const UpdatePost = () => {
         }),
         []
     );
+
+    useEffect(() => {
+        if (posts) {
+            let post = posts.filter((post) => {
+                return id === post._id;
+            });
+            setOnePost(post[0]);
+        }
+    }, [posts]);
+
+    useEffect(() => {
+        if (onePost) {
+            setText(onePost.text);
+            setTitle(onePost.title);
+            setTagsString(onePost.tags.join(','));
+            setImageUrl(onePost.imageUrl);
+        }
+    }, [onePost]);
 
     const onSubmit = async () => {
         let tags = [];
@@ -94,7 +115,10 @@ export const UpdatePost = () => {
             text,
             tags,
             imageUrl,
+            _id: onePost._id,
         };
+
+        console.log(fields);
 
         updatePost(fields)
             .then((data) => {
@@ -110,11 +134,15 @@ export const UpdatePost = () => {
                     err.response.data.map((item) => {
                         toast.error(item.msg);
                     });
-                }else{
+                } else {
                     toast.error(err.response.data.message);
                 }
             });
     };
+
+    if (!posts) {
+        return <div>Loading.....</div>;
+    }
 
     return (
         <Paper style={{ padding: 30 }}>
@@ -177,7 +205,7 @@ export const UpdatePost = () => {
                     variant='contained'
                     onClick={onSubmit}
                 >
-                    {edit ? 'Сохранить' : 'Опубликовать'}
+                    Сохранить
                 </Button>
                 <a href='/'>
                     <Button size='large'>Отмена</Button>

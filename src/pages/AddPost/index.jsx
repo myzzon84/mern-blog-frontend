@@ -12,7 +12,6 @@ import { addPost, getPostById, updatePost } from '../../requests/requests.js';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { appStore } from '../../store/appStore.js';
-import { PostSkeleton } from '../../components/Post/Skeleton.jsx';
 
 export const AddPost = () => {
     const navigate = useNavigate();

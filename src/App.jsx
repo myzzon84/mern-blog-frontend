@@ -18,8 +18,6 @@ function App() {
     const setEdit = appStore((state) => state.setEdit);
     const location = useLocation();
 
-    console.log(location);
-
     useEffect(() => {
         if (!location.pathname.includes('/edit')) {
             sessionStorage.removeItem('edit');
